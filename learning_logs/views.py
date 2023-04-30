@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Topic
+from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
 
 # Home page for the Learning Log
@@ -63,4 +63,27 @@ def new_entry(request, topic_id):   # Including the topic_id param to store the 
 
     # Display a blank or invalid form
     context = {'topic': topic, 'form': form} # Taking the value of the form and topic variables
-    return render(request, 'learning_logs/new_entry.html', context) # Render the new_entry page
+    return render(request, 'learning_logs/new_entry.html', context) # Render the new_entry page 
+
+
+# Edit an existing entry
+def edit_entry(request, entry_id):
+    entry = Entry.objects.get(id=entry_id) # Get the id of the entry the user wants to edit
+    topic = entry.topic # Get the relevant topic
+
+    if request.method != 'POST':
+        # Initial request, pre-fill with current entry data
+        form = EntryForm(instance=entry) # Create a form pre-filled with data from this entry's instance
+    else:
+        # POST data submitted, process data
+        form = EntryForm(instance=entry, data=request.POST) # Create a form using the data associated with the
+                                                            # existing entry object and, then update it with data
+                                                            # from the data from the POST request
+        if form.is_valid(): # Check that form is valid
+            form.save() # Because the entry is already associated with the correct topic, the database entry
+                        # can be updated immediately
+            return redirect('learning_logs:topic', topic_id=topic.id) # Sending the user to the relevant topic page
+    
+    context = {'entry': entry, 'topic': topic, 'form': form} # Taking the value of entry, topic and form variables
+    return render(request, 'learning_logs/edit_entry.html', context) # Render the edit_entry page
+
