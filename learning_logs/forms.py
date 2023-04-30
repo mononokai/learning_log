@@ -13,5 +13,7 @@ class EntryForm(forms.ModelForm):
         model = Entry
         fields = ['text']
         labels = {'text': ''}
-        widgets = {'text': forms.Textarea(attrs={'cols': 80})}
-
+        widgets = {'text': forms.Textarea(attrs={'cols': 80})} # Widgets are HTML form elements like text boxes and drop downs
+        # The widgets attribute lets us alter Django's default widget values
+        # By supplying a value of 80 to the 'cols' key, we are making the text area 80 columns wide
+        # whereas the default is only 40
