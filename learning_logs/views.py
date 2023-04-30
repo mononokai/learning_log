@@ -48,9 +48,11 @@ def new_entry(request, topic_id):
         form = EntryForm()
     else:
         # POST data submitted, process data
-        new_entry = form.save(commit=False)
-        new_entry.topic = topic
-        new_entry.save()
+        form = EntryForm(data=request.POST) # Instantiating EntryForm with the values in the POST request
+        if form.is_valid(): # Checking that all required fields are filled
+            new_entry = form.save(commit=False) # 
+            new_entry.topic = topic
+            new_entry.save()
         redirect('learning_logs:topic', topic_id=topic_id)
 
     # Display a blank or invalid form
